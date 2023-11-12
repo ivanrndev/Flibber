@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "733926749679",
+    "project_id": "flibber-dce1c",
+    "storage_bucket": "flibber-dce1c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:733926749679:android:1ccb1234803254016db21a",
+        "android_client_info": {
+          "package_name": "com.rn_redux_boilerplate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEsuqHBb8h_kDvaqw1nY9mCikxyU8FRNQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

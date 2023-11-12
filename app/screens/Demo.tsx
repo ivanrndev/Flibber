@@ -2,7 +2,6 @@ import React from 'react';
 import {Text, View, Button} from 'react-native';
 import {useSelector} from 'react-redux';
 
-import {getNews} from '../services';
 import {requestNewToken} from '../utils/token';
 import {RootState} from '../store/store';
 
@@ -11,9 +10,7 @@ import {RootState} from '../store/store';
 const Demo = () => {
   const token = useSelector((state: RootState) => state.user.token);
 
-  const getData = () => {
-    getNews().then(res => console.log(res));
-  };
+  const getData = () => {};
 
   const handleLogin = async () => {
     // const body = {

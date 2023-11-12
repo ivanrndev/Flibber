@@ -1,5 +1,6 @@
-import React from 'react';
-import {StyleSheet, View, Button, Image, ScrollView} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View, Button, Image, ScrollView, Text} from 'react-native';
+
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 
@@ -7,13 +8,12 @@ import Layout from '../../components/Layout';
 import Card from '../../components/Card';
 import {Input} from '../../components/Form';
 const AppIcon = require('../../assets/images//appicon.png');
-
-import {useDispatch} from 'react-redux';
-import {updateUser} from '../../store/userSlice';
-
-import {login} from '../../services';
-import {setSecureValue} from '../../utils/keyChain';
-import {transformToFormikErrors} from '../../utils/form';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useFirestoreServiceContext} from '../../hooks/useFirestoreService';
+import {useNavigation} from '@react-navigation/native';
+import {ROOT_ROUTES} from '../../routes/constants';
+import {RootStackParamList} from '../../routes/RootNavigation';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 interface ValuesType {
   username: string;
@@ -28,83 +28,100 @@ const LoginSchema = Yup.object().shape({
 });
 
 const Login = () => {
-  const dispatch = useDispatch();
+  const {loginUser, setUser} = useFirestoreServiceContext();
+  const [loading, setLoading] = useState(true);
+  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const handleLogin = (values: ValuesType, {setErrors}: any) => {
-    // Add grant_type value to obj
-    let reqObj: any = Object.assign({}, values, {grant_type: 'password'});
-    // Service request
-    login(new URLSearchParams(reqObj))
+  useEffect(() => {
+    AsyncStorage.getItem('user')
       .then(res => {
-        if (res.data?.user?.access_token) {
-          const {name, username, access_token, refresh_token} = res.data.user;
-          dispatch(updateUser({name, username, token: access_token}));
-          setSecureValue('token', access_token);
-          setSecureValue('refresh_token', refresh_token);
+        if (res) {
+          const user = JSON.parse(res);
+          setUser(user);
+          nav.navigate(ROOT_ROUTES.MAIN_BOTTOM_BAR);
         }
       })
       .catch(e => {
-        if (e.response?.data?.errors) {
-          let result = transformToFormikErrors(e.response.data.errors);
-          setErrors(result);
-        }
+        console.log('get user error', e);
       });
+    setLoading(false);
+  }, [nav, setUser]);
+
+  const handleLogin = async (values: ValuesType) => {
+    try {
+      const {password, username} = values;
+      const res = await loginUser(username, password);
+      if (res) {
+        nav.navigate(ROOT_ROUTES.MAIN_BOTTOM_BAR);
+      }
+      console.log('resssss123', res);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <Layout>
-      <ScrollView contentContainerStyle={styles.scrollview}>
-        <View style={styles.container}>
-          <Card style={styles.formWrapper}>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={LoginSchema}
-              onSubmit={handleLogin}>
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                touched,
-              }) => (
-                <>
-                  <View style={styles.iconWrapper}>
-                    <Image source={AppIcon} style={styles.appIcon} />
-                  </View>
-                  <Input
-                    testID="Login.Username"
-                    placeholder="Username/Email"
-                    onChangeText={handleChange('username')}
-                    onBlur={handleBlur('username')}
-                    value={values.username}
-                    keyboardType="email-address"
-                    error={
-                      errors.username && touched.username ? errors.username : ''
-                    }
-                  />
-                  <Input
-                    testID="Login.Password"
-                    placeholder="Password"
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
-                    value={values.password}
-                    secureTextEntry
-                    error={
-                      errors.password && touched.password ? errors.password : ''
-                    }
-                  />
-                  <Button
-                    title="Login"
-                    onPress={handleSubmit}
-                    testID="Login.Button"
-                  />
-                </>
-              )}
-            </Formik>
-          </Card>
-        </View>
-      </ScrollView>
+      {loading ? (
+        <Text style={{textAlign: 'center', fontSize: 25}}>Loading</Text>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollview}>
+          <View style={styles.container}>
+            <Card style={styles.formWrapper}>
+              <Formik
+                initialValues={initialValues}
+                validationSchema={LoginSchema}
+                onSubmit={handleLogin}>
+                {({
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                  values,
+                  errors,
+                  touched,
+                }) => (
+                  <>
+                    <View style={styles.iconWrapper}>
+                      <Image source={AppIcon} style={styles.appIcon} />
+                    </View>
+                    <Input
+                      testID="Login.Username"
+                      placeholder="Username/Email"
+                      onChangeText={handleChange('username')}
+                      onBlur={handleBlur('username')}
+                      value={values.username}
+                      keyboardType="email-address"
+                      error={
+                        errors.username && touched.username
+                          ? errors.username
+                          : ''
+                      }
+                    />
+                    <Input
+                      testID="Login.Password"
+                      placeholder="Password"
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                      value={values.password}
+                      secureTextEntry
+                      error={
+                        errors.password && touched.password
+                          ? errors.password
+                          : ''
+                      }
+                    />
+                    <Button
+                      title="Login"
+                      onPress={handleSubmit}
+                      testID="Login.Button"
+                    />
+                  </>
+                )}
+              </Formik>
+            </Card>
+          </View>
+        </ScrollView>
+      )}
     </Layout>
   );
 };

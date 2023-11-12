@@ -1,27 +1,30 @@
 import React from 'react';
 import {StyleSheet, ScrollView, View, Text, Switch, Image} from 'react-native';
 
-import {useDispatch} from 'react-redux';
-import {clearUser} from '../store/userSlice';
-import {removeSecureValue} from '../utils/keyChain';
-
 import {useTheme} from '../theme/useTheme';
 import Layout from '../components/Layout';
 import Card from '../components/Card';
 import MenuItem from '../components/MenuItem';
+import {useNavigation} from '@react-navigation/native';
+import {useFirestoreServiceContext} from '../hooks/useFirestoreService';
+import {ROOT_ROUTES} from '../routes/constants';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../routes/RootNavigation';
 
 const avatar = require('../assets/images/avatar.png');
 
 const Settings = () => {
   const {theme, toggleTheme} = useTheme();
-  const dispatch = useDispatch();
-
+  const {logOut} = useFirestoreServiceContext();
+  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const handleLogout = () => {
     // Remove both access token and refresh token from Local
-    removeSecureValue('token');
-    removeSecureValue('refresh_token');
-    // Remove access token from redux store
-    dispatch(clearUser());
+    // removeSecureValue('token');
+    // removeSecureValue('refresh_token');
+    // // Remove access token from rdeux store
+    // dispatch(clearUser());
+    logOut();
+    nav.navigate(ROOT_ROUTES.SIGN_IN);
   };
 
   return (
