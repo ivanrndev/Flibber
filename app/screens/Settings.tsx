@@ -5,18 +5,15 @@ import {useTheme} from '../theme/useTheme';
 import Layout from '../components/Layout';
 import Card from '../components/Card';
 import MenuItem from '../components/MenuItem';
-import {useNavigation} from '@react-navigation/native';
 import {useFirestoreServiceContext} from '../hooks/useFirestoreService';
-import {ROOT_ROUTES} from '../routes/constants';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../routes/RootNavigation';
+import {ROOT_ROUTES, useTypedNavigation} from '../routes/constants';
 
 const avatar = require('../assets/images/avatar.png');
 
 const Settings = () => {
   const {theme, toggleTheme} = useTheme();
   const {logOut} = useFirestoreServiceContext();
-  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const nav = useTypedNavigation();
   const handleLogout = () => {
     // Remove both access token and refresh token from Local
     // removeSecureValue('token');

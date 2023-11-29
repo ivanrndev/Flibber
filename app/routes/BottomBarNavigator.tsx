@@ -1,5 +1,4 @@
 import {useTheme} from '../theme/useTheme';
-import Tasks from '../screens/Tasks';
 import NetworkExample from '../screens/NetworkExample';
 import Settings from '../screens/Settings';
 import React from 'react';
@@ -7,6 +6,8 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {BottomBarParamList} from './RootNavigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {ColorValue} from 'react-native';
+import {BOTTOM_BAR_ROUTES} from './constants';
+import LabsListScreen from '../screens/Tasks';
 // Icons for Bottom Tab Navigation
 const homeIcon = ({color}: {color: ColorValue | number}) => (
   <Icon name="list-sharp" size={30} color={color} />
@@ -41,8 +42,8 @@ export const BottomTabBar = () => {
         tabBarShowLabel: false,
       }}>
       <Tab.Screen
-        name="LIBS_LIST"
-        component={Tasks}
+        name={BOTTOM_BAR_ROUTES.LABS_LIST}
+        component={LabsListScreen}
         options={{
           tabBarIcon: homeIcon,
         }}
@@ -55,7 +56,7 @@ export const BottomTabBar = () => {
         }}
       />
       <Tab.Screen
-        name="SETTINGS"
+        name={BOTTOM_BAR_ROUTES.SETTINGS}
         component={Settings}
         options={{
           // headerShown: false,

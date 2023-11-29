@@ -15,14 +15,14 @@ interface User {
   password: string;
 }
 
-interface Lab {
+export interface ILabItem {
   id: string;
   title: string;
 }
 
 const useFirestoreService = (): FirestoreServiceContextProps => {
   const [user, setUser] = useState<User | null>(null);
-  const [labs, setLabs] = useState<Lab[]>([]);
+  const [labsList, setLabs] = useState<ILabItem[]>([]);
 
   const loginUser = async (
     username: string,
@@ -60,8 +60,8 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
       const fetchedLabs = labsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-      })) as Lab[];
-      console.log('setLabs', fetchedLabs);
+      })) as ILabItem[];
+      console.log('do fetch labsList');
 
       setLabs(fetchedLabs);
     } else {
@@ -70,18 +70,20 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
   }, [user?.id]);
 
   useEffect(() => {
-    console.log('do fetch labs', user?.id);
-    fetchLabs();
+    if (user?.id) {
+      fetchLabs();
+    }
   }, [user?.id, fetchLabs]);
 
-  return {user, labs, loginUser, setUser, logOut};
+  return {user, labsList, loginUser, setUser, logOut, fetchLabs};
 };
 interface FirestoreServiceContextProps {
   user: User | null;
-  labs: Lab[];
+  labsList: ILabItem[];
   loginUser: (username: string, password: string) => Promise<boolean | Error>;
   setUser: (user: User) => void;
   logOut: () => Promise<void>;
+  fetchLabs: () => void;
 }
 
 const FirestoreServiceContext = createContext<

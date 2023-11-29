@@ -1,85 +1,65 @@
-import React, {useState, useRef} from 'react';
-import {StyleSheet, FlatList, View, TextInput} from 'react-native';
-
-import {useSelector, useDispatch} from 'react-redux';
-import {taskAdded, taskToggled} from '../store/tasksSlice';
-import {RootState} from '../store/store';
-import {Task} from '../store/tasksSlice';
+import React from 'react';
+import {
+  StyleSheet,
+  FlatList,
+  View,
+  TouchableOpacity,
+  Text,
+  RefreshControl,
+} from 'react-native';
 
 import {useTheme} from '../theme/useTheme';
 import Layout from '../components/Layout';
 import Card from '../components/Card';
 import ListItem from '../components/ListItem';
+import {ROOT_ROUTES, useTypedNavigation} from '../routes/constants';
+import {
+  ILabItem,
+  useFirestoreServiceContext,
+} from '../hooks/useFirestoreService';
 
-const Tasks = () => {
+const LabsListScreen = () => {
   const {theme} = useTheme();
 
-  const inputRef = useRef<TextInput>(null);
-
-  const todoList = useSelector((state: RootState) => state.todos.entities);
+  const {labsList, fetchLabs} = useFirestoreServiceContext();
   // const loadingStatus = useSelector((state) => state.todos.status);
-  const dispatch = useDispatch();
+  const nav = useTypedNavigation();
 
-  const [text, setText] = useState('');
+  const navToAddTask = () => nav.navigate(ROOT_ROUTES.ADD_LAB);
 
-  const addNewTask = () => {
-    let temp = text.trim();
-    if (temp !== '') {
-      dispatch(taskAdded({id: Date.now(), title: temp, done: false}));
-    }
-    inputRef.current?.clear();
-  };
-
-  const onCheckedHandler = (id: string) => {
-    dispatch(taskToggled(id));
-  };
-
-  const renderItem = ({item, index}: {item: Task; index: number}) => (
-    <ListItem item={item} index={index} onPress={onCheckedHandler} />
+  const renderItem = ({item, index}: {item: ILabItem; index: number}) => (
+    <ListItem item={item} index={index} />
   );
 
-  const keyExtractor = (item: Task) => `task-${item.id}`;
+  const keyExtractor = (item: ILabItem) => `task-${item.id}`;
+
+  const onRefresh = () => fetchLabs();
 
   return (
     <Layout>
-      {/* Tasks Listing starts here */}
       <FlatList
-        data={todoList}
+        data={labsList}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
+        // refreshControl={refreshComponent}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={onRefresh} />
+        }
         contentContainerStyle={styles.flatList}
       />
-      {/* Tasks Listing ends here */}
-
       <Card
         style={[styles.inputCard, {borderTopColor: theme?.cardBorderColor}]}>
-        {/* TextInput and InputButton starts here */}
         <View style={styles.inputBtnRow}>
-          <View style={styles.inputBtnWrp}>
-            <TextInput
-              ref={inputRef}
-              placeholder="New Task"
-              placeholderTextColor={theme?.color}
-              style={[
-                styles.input,
-                {
-                  color: theme?.color,
-                  backgroundColor: theme?.layoutBg,
-                  borderColor: theme?.layoutBg,
-                },
-              ]}
-              onChangeText={t => setText(t)}
-              onSubmitEditing={() => addNewTask()}
-            />
-          </View>
+          <TouchableOpacity onPress={navToAddTask} style={styles.inputBtnWrp}>
+            <Text>ADD LAB</Text>
+          </TouchableOpacity>
         </View>
-        {/* TextInput and InputButton ends here */}
       </Card>
     </Layout>
   );
 };
 
-export default Tasks;
+export default LabsListScreen;
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
@@ -112,6 +92,7 @@ const styles = StyleSheet.create({
   inputBtnWrp: {
     flexDirection: 'row',
     flex: 1,
+    justifyContent: 'center',
   },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -145,8 +126,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    // borderWidth: StyleSheet.hairlineWidth,
-    // borderColor: '#c50e29',
     marginRight: 8,
   },
   btnClearText: {

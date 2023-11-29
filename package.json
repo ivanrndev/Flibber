@@ -19,6 +19,7 @@
     "storybook-watch": "sb-rn-watcher"
   },
   "dependencies": {
+    "@react-native-community/checkbox": "^0.5.16",
     "@react-native-community/netinfo": "^9.4.1",
     "@react-native-firebase/app": "^18.6.1",
     "@react-native-firebase/firestore": "^18.6.1",

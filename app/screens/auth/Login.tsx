@@ -10,10 +10,7 @@ import {Input} from '../../components/Form';
 const AppIcon = require('../../assets/images//appicon.png');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFirestoreServiceContext} from '../../hooks/useFirestoreService';
-import {useNavigation} from '@react-navigation/native';
-import {ROOT_ROUTES} from '../../routes/constants';
-import {RootStackParamList} from '../../routes/RootNavigation';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {ROOT_ROUTES, useTypedNavigation} from '../../routes/constants';
 
 interface ValuesType {
   username: string;
@@ -30,7 +27,7 @@ const LoginSchema = Yup.object().shape({
 const Login = () => {
   const {loginUser, setUser} = useFirestoreServiceContext();
   const [loading, setLoading] = useState(true);
-  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const nav = useTypedNavigation();
 
   useEffect(() => {
     AsyncStorage.getItem('user')
