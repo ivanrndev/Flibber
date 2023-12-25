@@ -3,19 +3,21 @@ import {StyleSheet, Text, Pressable} from 'react-native';
 import {useTheme} from '../theme/useTheme';
 import Card from './Card';
 import {ThemeContextInterface} from '../theme/useTheme';
-import {ILabItem} from '../hooks/useFirestoreService';
+import {ILabItem} from '../hooks/types';
 
-interface ListItemType {
+interface IListItemProps {
   item: ILabItem;
   index?: number;
+  onPress: () => void;
 }
 
-const ListItem = ({item}: ListItemType): JSX.Element => {
+const ListItem = ({item, onPress}: IListItemProps): JSX.Element => {
   const {theme}: Partial<ThemeContextInterface> = useTheme();
 
   return (
     <Card style={styles.card}>
       <Pressable
+        onPress={onPress}
         style={[styles.row]}
         accessibilityHint="Toggles task done and undone"
         accessibilityRole="radio">

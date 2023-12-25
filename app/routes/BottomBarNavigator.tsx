@@ -49,7 +49,7 @@ export const BottomTabBar = () => {
         }}
       />
       <Tab.Screen
-        name="Network_Example"
+        name={BOTTOM_BAR_ROUTES.Network_Example}
         component={NetworkExample}
         options={{
           tabBarIcon: networkIcon,

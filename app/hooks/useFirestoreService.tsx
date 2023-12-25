@@ -6,22 +6,16 @@ import {
   createContext,
   useContext,
 } from 'react';
+import {Alert} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {navigateWithRef} from '../routes/RootNavigation';
+import {ILabItem, IUser} from './types';
 
-interface User {
-  id: string;
-  username: string;
-  password: string;
-}
-
-export interface ILabItem {
-  id: string;
-  title: string;
-}
+export interface ILabItemAddRequest extends Omit<ILabItem, 'id' | 'userID'> {}
 
 const useFirestoreService = (): FirestoreServiceContextProps => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<IUser | null>(null);
   const [labsList, setLabs] = useState<ILabItem[]>([]);
 
   const loginUser = async (
@@ -35,7 +29,7 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
       .get();
     const doc = querySnapshot.docs[0];
     if (doc) {
-      const newUser = {id: doc.id, ...querySnapshot.docs[0].data()} as User;
+      const newUser = {id: doc.id, ...querySnapshot.docs[0].data()} as IUser;
       AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
       return true;
@@ -50,6 +44,7 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
     setLabs([]);
   };
 
+  // ---- fetch labs list
   const fetchLabs = useCallback(async () => {
     if (user?.id) {
       const labsSnapshot = await firestore()
@@ -69,21 +64,58 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
     }
   }, [user?.id]);
 
+  // ---- fetch add lab
+  const fetchAddLab = useCallback(
+    async (newLabData: ILabItemAddRequest) => {
+      if (user?.id) {
+        firestore()
+          .collection('labs')
+          .add({...newLabData, userID: user.id})
+          .then(res => {
+            setLabs(prevState =>
+              [
+                {
+                  ...newLabData,
+                  userID: user.id,
+                  // @ts-ignore
+                  id: res._documentPath._parts[1] as string,
+                },
+              ].concat(prevState),
+            );
+            Alert.alert('success fetchAddLab', '', [
+              {
+                text: 'OK',
+                onPress: () => {
+                  console.log(navigateWithRef()?.goBack());
+                },
+              },
+            ]);
+          })
+          .catch(e => console.error('fetchAddLab catch', e));
+      } else {
+        console.log('no user for now');
+      }
+    },
+    [user?.id],
+  );
+
+  // ---- init fetch
   useEffect(() => {
     if (user?.id) {
       fetchLabs();
     }
   }, [user?.id, fetchLabs]);
 
-  return {user, labsList, loginUser, setUser, logOut, fetchLabs};
+  return {user, labsList, loginUser, setUser, logOut, fetchLabs, fetchAddLab};
 };
 interface FirestoreServiceContextProps {
-  user: User | null;
+  user: IUser | null;
   labsList: ILabItem[];
   loginUser: (username: string, password: string) => Promise<boolean | Error>;
-  setUser: (user: User) => void;
+  setUser: (user: IUser) => void;
   logOut: () => Promise<void>;
   fetchLabs: () => void;
+  fetchAddLab: (newLabData: ILabItemAddRequest) => Promise<void>;
 }
 
 const FirestoreServiceContext = createContext<

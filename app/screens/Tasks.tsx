@@ -13,10 +13,8 @@ import Layout from '../components/Layout';
 import Card from '../components/Card';
 import ListItem from '../components/ListItem';
 import {ROOT_ROUTES, useTypedNavigation} from '../routes/constants';
-import {
-  ILabItem,
-  useFirestoreServiceContext,
-} from '../hooks/useFirestoreService';
+import {useFirestoreServiceContext} from '../hooks/useFirestoreService';
+import {ILabItem} from '../hooks/types';
 
 const LabsListScreen = () => {
   const {theme} = useTheme();
@@ -27,9 +25,12 @@ const LabsListScreen = () => {
 
   const navToAddTask = () => nav.navigate(ROOT_ROUTES.ADD_LAB);
 
-  const renderItem = ({item, index}: {item: ILabItem; index: number}) => (
-    <ListItem item={item} index={index} />
-  );
+  const renderItem = ({item, index}: {item: ILabItem; index: number}) => {
+    const onPress = () => {
+      nav.navigate(ROOT_ROUTES.EDIT_LAB, {item});
+    };
+    return <ListItem onPress={onPress} item={item} index={index} />;
+  };
 
   const keyExtractor = (item: ILabItem) => `task-${item.id}`;
 

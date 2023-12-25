@@ -7,10 +7,11 @@ import * as Yup from 'yup';
 import Layout from '../../components/Layout';
 import Card from '../../components/Card';
 import {Input} from '../../components/Form';
-const AppIcon = require('../../assets/images//appicon.png');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFirestoreServiceContext} from '../../hooks/useFirestoreService';
 import {ROOT_ROUTES, useTypedNavigation} from '../../routes/constants';
+
+const AppIcon = require('../../assets/images//appicon.png');
 
 interface ValuesType {
   username: string;

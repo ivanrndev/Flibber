@@ -1,18 +1,23 @@
 import React from 'react';
 
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  createNavigationContainerRef,
+  NavigationContainer,
+} from '@react-navigation/native';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from '../screens/auth/Login';
 import {FirestoreServiceProvider} from '../hooks/useFirestoreService';
 import {BottomTabBar} from './BottomBarNavigator';
 import {BOTTOM_BAR_ROUTES, ROOT_ROUTES} from './constants';
-import {AddLabScreen} from '../screens/AddLabScreen';
+import {LabScreen} from '../screens/LabScreen';
+import {ILabItem} from '../hooks/types';
 
 export type RootStackParamList = {
   [ROOT_ROUTES.SIGN_IN]: undefined;
   [ROOT_ROUTES.MAIN_BOTTOM_BAR]: undefined;
   [ROOT_ROUTES.ADD_LAB]: undefined;
+  [ROOT_ROUTES.EDIT_LAB]: {item: ILabItem};
 };
 
 export type BottomBarParamList = {
@@ -21,19 +26,38 @@ export type BottomBarParamList = {
   [BOTTOM_BAR_ROUTES.Network_Example]: undefined;
 };
 
+export type INavigateRefResult = {
+  navigate: () => void;
+  goBack: () => void;
+} | null;
+
+export const navigationRef = createNavigationContainerRef();
+
+export const navigateWithRef = (name = null): INavigateRefResult => {
+  if (navigationRef.isReady()) {
+    return {
+      navigate: () => navigationRef.navigate(name as never),
+      goBack: () => navigationRef.goBack(),
+    };
+  }
+  console.error('nav is not ready');
+  return null;
+};
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigation() {
   return (
     <FirestoreServiceProvider>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name={ROOT_ROUTES.SIGN_IN} component={Login} />
           <Stack.Screen
             name={ROOT_ROUTES.MAIN_BOTTOM_BAR}
             component={BottomTabBar}
           />
-          <Stack.Screen name={ROOT_ROUTES.ADD_LAB} component={AddLabScreen} />
+          <Stack.Screen name={ROOT_ROUTES.ADD_LAB} component={LabScreen} />
+          <Stack.Screen name={ROOT_ROUTES.EDIT_LAB} component={LabScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </FirestoreServiceProvider>
