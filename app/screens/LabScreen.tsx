@@ -7,6 +7,9 @@ import CheckBox from '@react-native-community/checkbox';
 import {useFirestoreServiceContext} from '../hooks/useFirestoreService';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {ILabItem} from '../hooks/types';
+import firestore, {
+  FirebaseFirestoreTypes,
+} from '@react-native-firebase/firestore';
 
 interface ValuesType {
   title: string;
@@ -14,7 +17,7 @@ interface ValuesType {
 }
 
 export const LabScreen = () => {
-  const {fetchAddLab} = useFirestoreServiceContext();
+  const {fetchAddLab, fetchDeleteLab} = useFirestoreServiceContext();
   const route: RouteProp<{item: {item: ILabItem}} | never> = useRoute();
 
   const labInitData: ILabItem | null = route?.params?.item || null;
@@ -37,6 +40,8 @@ export const LabScreen = () => {
   const handleAddLab = useCallback(
     (data: ValuesType) => {
       fetchAddLab({
+        createdAt:
+          firestore.FieldValue.serverTimestamp() as FirebaseFirestoreTypes.Timestamp,
         title: data.title,
         isPublic: checkboxValue,
         description: data.description,
@@ -44,6 +49,11 @@ export const LabScreen = () => {
     },
     [checkboxValue, fetchAddLab],
   );
+
+  const handleDeleteAddLab = () => {
+    fetchDeleteLab(labInitData?.id);
+  };
+
   return (
     <>
       <Text
@@ -97,11 +107,26 @@ export const LabScreen = () => {
                   />
                 </View>
               </View>
+              {labInitData?.title ? (
+                <TouchableOpacity
+                  onPress={handleDeleteAddLab}
+                  style={{
+                    backgroundColor: 'purple',
+                    marginHorizontal: 20,
+                    paddingVertical: 10,
+                    borderRadius: 20,
+                  }}>
+                  <Text style={{color: 'white', textAlign: 'center'}}>
+                    Delete Lab
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
               <TouchableOpacity
                 onPress={handleSubmit}
                 style={{
                   backgroundColor: 'purple',
                   marginHorizontal: 20,
+                  marginVertical: 20,
                   paddingVertical: 10,
                   borderRadius: 20,
                 }}>

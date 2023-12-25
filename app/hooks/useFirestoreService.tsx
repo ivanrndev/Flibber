@@ -10,9 +10,7 @@ import {Alert} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {navigateWithRef} from '../routes/RootNavigation';
-import {ILabItem, IUser} from './types';
-
-export interface ILabItemAddRequest extends Omit<ILabItem, 'id' | 'userID'> {}
+import {ILabItem, ILabItemAddLocalData, IUser} from './types';
 
 const useFirestoreService = (): FirestoreServiceContextProps => {
   const [user, setUser] = useState<IUser | null>(null);
@@ -64,13 +62,47 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
     }
   }, [user?.id]);
 
-  // ---- fetch add lab
-  const fetchAddLab = useCallback(
-    async (newLabData: ILabItemAddRequest) => {
+  // ---- fetch delete lab
+  const fetchDeleteLab = useCallback(
+    async (labDocId: string) => {
       if (user?.id) {
         firestore()
           .collection('labs')
-          .add({...newLabData, userID: user.id})
+          .doc(labDocId)
+          .delete()
+          .then(() => {
+            setLabs(prevState =>
+              prevState.filter((item: ILabItem) => labDocId !== item.id),
+            );
+            Alert.alert('success fetchDeleteLab', '', [
+              {
+                text: 'OK',
+                onPress: () => {
+                  console.log(navigateWithRef()?.goBack());
+                },
+              },
+            ]);
+          })
+          .catch(e => {
+            console.log('fetchDeleteLab: firestore catch', e);
+          });
+      } else {
+        console.log('fetchDeleteLab: no user for now');
+      }
+    },
+    [user?.id],
+  );
+
+  // ---- fetch add lab
+  const fetchAddLab = useCallback(
+    (newLabData: ILabItemAddLocalData) => {
+      if (user?.id) {
+        firestore()
+          .collection('labs')
+          .add({
+            ...newLabData,
+            userID: user.id,
+          } as Omit<ILabItem, 'id'>)
           .then(res => {
             setLabs(prevState =>
               [
@@ -79,7 +111,7 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
                   userID: user.id,
                   // @ts-ignore
                   id: res._documentPath._parts[1] as string,
-                },
+                } as ILabItem,
               ].concat(prevState),
             );
             Alert.alert('success fetchAddLab', '', [
@@ -106,7 +138,16 @@ const useFirestoreService = (): FirestoreServiceContextProps => {
     }
   }, [user?.id, fetchLabs]);
 
-  return {user, labsList, loginUser, setUser, logOut, fetchLabs, fetchAddLab};
+  return {
+    user,
+    labsList,
+    loginUser,
+    setUser,
+    logOut,
+    fetchLabs,
+    fetchAddLab,
+    fetchDeleteLab,
+  };
 };
 interface FirestoreServiceContextProps {
   user: IUser | null;
@@ -115,7 +156,8 @@ interface FirestoreServiceContextProps {
   setUser: (user: IUser) => void;
   logOut: () => Promise<void>;
   fetchLabs: () => void;
-  fetchAddLab: (newLabData: ILabItemAddRequest) => Promise<void>;
+  fetchAddLab: (newLabData: ILabItemAddLocalData) => void;
+  fetchDeleteLab: (labDoc: string) => void;
 }
 
 const FirestoreServiceContext = createContext<
