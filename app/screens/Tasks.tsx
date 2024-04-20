@@ -36,9 +36,16 @@ const LabsListScreen = () => {
 
   const onRefresh = () => fetchLabs();
 
+  const renderEmptyState = () => (
+    <View>
+      <Text>You don`t have labs for now</Text>
+    </View>
+  );
+
   return (
     <Layout>
       <FlatList
+        ListEmptyComponent={renderEmptyState}
         data={labsList}
         renderItem={renderItem}
         keyExtractor={keyExtractor}

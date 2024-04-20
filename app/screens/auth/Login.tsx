@@ -1,5 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Button, Image, ScrollView, Text} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Button,
+  Image,
+  ScrollView,
+  Text,
+  Alert,
+} from 'react-native';
 
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -51,8 +59,9 @@ const Login = () => {
       const res = await loginUser(username, password);
       if (res) {
         nav.navigate(ROOT_ROUTES.MAIN_BOTTOM_BAR);
+        return;
       }
-      console.log('resssss123', res);
+      Alert.alert('wrong credentials');
     } catch (error) {
       console.error(error);
     }

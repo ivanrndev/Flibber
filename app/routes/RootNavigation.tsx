@@ -10,8 +10,8 @@ import Login from '../screens/auth/Login';
 import {FirestoreServiceProvider} from '../hooks/useFirestoreService';
 import {BottomTabBar} from './BottomBarNavigator';
 import {BOTTOM_BAR_ROUTES, ROOT_ROUTES} from './constants';
-import {LabScreen} from '../screens/LabScreen';
 import {ILabItem} from '../hooks/types';
+import {LabsScreen} from '../screens/LabScreen';
 
 export type RootStackParamList = {
   [ROOT_ROUTES.SIGN_IN]: undefined;
@@ -56,8 +56,8 @@ export default function RootNavigation() {
             name={ROOT_ROUTES.MAIN_BOTTOM_BAR}
             component={BottomTabBar}
           />
-          <Stack.Screen name={ROOT_ROUTES.ADD_LAB} component={LabScreen} />
-          <Stack.Screen name={ROOT_ROUTES.EDIT_LAB} component={LabScreen} />
+          <Stack.Screen name={ROOT_ROUTES.ADD_LAB} component={LabsScreen} />
+          <Stack.Screen name={ROOT_ROUTES.EDIT_LAB} component={LabsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </FirestoreServiceProvider>
