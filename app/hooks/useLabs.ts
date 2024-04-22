@@ -15,6 +15,10 @@ import {
 import {Alert} from 'react-native';
 import {navigateWithRef} from '../routes/RootNavigation';
 
+/**
+ * Interface representing the response of using labs.
+ * @interface
+ */
 interface IUseLabsResponse {
   labsList: ILabItem[];
   fetchLabs: () => Promise<void>;
@@ -28,48 +32,79 @@ interface IUseLabsResponse {
   >;
 }
 
+/**
+ * Fetches the user's labs and provides methods for adding and deleting labs.
+ *
+ * @param {string | undefined} userId - The ID of the user.
+ * @returns {IUseLabsResponse} - An object containing the labs list and methods for fetching, adding, and deleting labs.
+ */
 export const useLabs = (userId: string | undefined): IUseLabsResponse => {
   const [labsList, setLabs] = useState<ILabItem[]>([]);
   const labsCollection = firestore().collection('labs');
+  const [, setPublicLabs] = useState<ILabItem[]>([]);
 
-  const fetchLabs = useCallback(async () => {
-    if (!userId) {
-      console.log('No user for fetching labs');
-      return;
-    }
-
-    try {
-      const labsSnapshot = await labsCollection
-        // .where('userID', '==', userId)
-        .get();
-      const fetchedLabs: ILabItem[] = labsSnapshot.docs.map(doc => ({
-        ...(doc.data() as ILabItem),
-        id: doc.id,
-      }));
-      setLabs(fetchedLabs);
-    } catch (error) {
-      console.error('Error fetching labs:', error);
-    }
-  }, [userId]);
-
-  const fetchAddLab = useCallback(
-    async (newLabData: ILabItemAddLocalData) => {
+  /**
+   * Executes a callback function if a user exists.
+   *
+   * @param {Function} callback - The function to be executed if a user exists.
+   * @param {Array} dependencies - The dependencies to be passed to the useCallback hook.
+   * @returns {Function} - The memoized callback function.
+   */
+  const useCallbackIfUserExists = (
+    callback: (...args: any[]) => Promise<void>,
+    dependencies: any[],
+  ) => {
+    return useCallback(async (...args: any[]) => {
       if (!userId) {
-        console.log('No user for adding a lab');
+        console.log('No user for performing the operation');
         return;
       }
 
       try {
-        const res = await labsCollection.add({...newLabData, userID: userId});
-        setLabs(prevState => [
-          {id: res.id, ...newLabData, userID: userId},
-          ...prevState,
-        ]);
-        Alert.alert('Lab added successfully');
-        navigateWithRef()?.goBack();
+        await callback(...args);
       } catch (error) {
-        console.error('Error adding lab:', error);
+        console.error('Error:', error);
       }
+    }, dependencies);
+  };
+
+  const fetchPublicLabs = useCallback(async () => {
+    try {
+      const publicLabsSnapshot = await labsCollection
+        .where('isPublic', '==', true)
+        .get();
+      const fetchedPublicLabs: ILabItem[] = publicLabsSnapshot.docs.map(
+        doc => ({
+          ...(doc.data() as ILabItem),
+          id: doc.id,
+        }),
+      );
+      setPublicLabs(fetchedPublicLabs);
+    } catch (error) {
+      console.error('Error fetching public labs:', error);
+    }
+  }, []);
+
+  const fetchLabs = useCallbackIfUserExists(async () => {
+    const labsSnapshot = await labsCollection
+      .where('userID', '==', userId)
+      .get();
+    const fetchedLabs: ILabItem[] = labsSnapshot.docs.map(doc => ({
+      ...(doc.data() as ILabItem),
+      id: doc.id,
+    }));
+    setLabs(fetchedLabs);
+  }, [userId]);
+
+  const fetchAddLab = useCallbackIfUserExists(
+    async (newLabData: ILabItemAddLocalData) => {
+      const res = await labsCollection.add({...newLabData, userID: userId});
+      setLabs(prevState => [
+        {id: res.id, ...newLabData, userID: userId},
+        ...prevState,
+      ]);
+      Alert.alert('Lab added successfully');
+      navigateWithRef()?.goBack();
     },
     [userId],
   );
@@ -93,6 +128,11 @@ export const useLabs = (userId: string | undefined): IUseLabsResponse => {
     [userId],
   );
 
+  /**
+   * Uploads a file to Firestore Cloud Storage.
+   *
+   * @returns {Promise<FirebaseStorageTypes.TaskSnapshot | undefined>} - The task snapshot if successful, or undefined if there was an error.
+   */
   const uploadFirestoreCloudFile = async (): Promise<
     FirebaseStorageTypes.TaskSnapshot | undefined
   > => {
@@ -115,6 +155,11 @@ export const useLabs = (userId: string | undefined): IUseLabsResponse => {
     }
   };
 
+  /**
+   * Uploads a photo to Firestore Cloud Storage.
+   *
+   * @returns {Promise<FirebaseStorageTypes.TaskSnapshot | undefined>} - A Promise that resolves to the uploaded photo's TaskSnapshot, or undefined if the upload fails.
+   */
   const uploadFirestoreCloudPhoto = async (): Promise<
     FirebaseStorageTypes.TaskSnapshot | undefined
   > => {

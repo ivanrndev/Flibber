@@ -6,7 +6,6 @@ import React, {
   useState,
 } from 'react';
 import {
-  Alert,
   Dimensions,
   Keyboard,
   Modal,
@@ -115,7 +114,7 @@ function FilesSection({
         {/*</View>*/}
         <View style={styles.container}>
           <Text
-            style={{fontSize: 20, paddingBottom: 80}}
+            style={{fontSize: 30, paddingBottom: 20}}
             onPress={() => setModalVisible(null)}>
             close
           </Text>
@@ -147,15 +146,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 35,
+    paddingTop: 15,
     backgroundColor: 'white',
   },
   pdf: {
-    // paddingTop: 55,
     borderWidth: 1,
     backgroundColor: 'grey',
-    width: Dimensions.get('window').width / 2,
-    height: 300,
+    width: Dimensions.get('window').width / 1.2,
+    height: Dimensions.get('window').height / 1.2,
   },
   centeredView: {
     flex: 1,
