@@ -23,7 +23,7 @@ export type RootStackParamList = {
 export type BottomBarParamList = {
   [BOTTOM_BAR_ROUTES.LABS_LIST]: undefined;
   [BOTTOM_BAR_ROUTES.SETTINGS]: undefined;
-  [BOTTOM_BAR_ROUTES.Network_Example]: undefined;
+  [BOTTOM_BAR_ROUTES.PUBLIC_LABS_LIST]: undefined;
 };
 
 export type INavigateRefResult = {

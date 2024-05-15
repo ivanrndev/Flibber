@@ -9,37 +9,48 @@ import firestore, {
 } from '@react-native-firebase/firestore';
 import {FirebaseStorageTypes} from '@react-native-firebase/storage';
 import {LabsScreenView} from './components/LabsScreenView';
+
 interface LabDetails {
   title: string;
   description: string;
 }
-export const LabsScreen = () => {
-  const {fetchAddLab, fetchDeleteLab} = useFirestoreServiceContext();
+
+const validationSchema = Yup.object().shape({
+  title: Yup.string().min(5, 'Too Short!').required('Required'),
+  description: Yup.string().min(5, 'Too Short!').required('Required'),
+});
+
+const getTitle = (selectedLab: ILabItem | null): string =>
+  selectedLab?.title ? 'View Lab' : 'Add Lab';
+
+export const LabsScreen: React.FC = () => {
+  const {fetchAddLab, fetchDeleteLab, user} = useFirestoreServiceContext();
   const route: RouteProp<{item: {item: ILabItem}} | never> = useRoute();
   const selectedLab: ILabItem | null = route?.params?.item || null;
+  console.log('heremyuser', user, selectedLab?.userID)
   const [uploadedFiles, setUploadedFiles] = useState<
-    FirebaseStorageTypes.TaskSnapshot[] | []
+    FirebaseStorageTypes.TaskSnapshot[]
   >(selectedLab?.files || []);
+  const [isPublic, setIsPublic] = useState<boolean>(!!selectedLab?.isPublic);
+
   const initialValues: LabDetails = {
-    title: selectedLab?.title,
-    description: selectedLab?.description,
+    title: selectedLab?.title || '',
+    description: selectedLab?.description || '',
   };
-  const title = selectedLab?.title ? 'View Lab' : 'Add Lab';
-  const [isPublic, setIsPublic] = useState(!!selectedLab?.isPublic);
-  const validationSchema = Yup.object().shape({
-    title: Yup.string().min(5, 'Too Short!').required('Required'),
-    description: Yup.string().min(5, 'Too Short!').required('Required'),
-  });
+
+  const title: string = getTitle(selectedLab);
+
   const handleFormSubmit = useCallback(
     (formValues: LabDetails) => {
       const labData = {
         createdAt:
           firestore.FieldValue.serverTimestamp() as FirebaseFirestoreTypes.Timestamp,
         title: formValues.title,
-        isPublic: isPublic,
+        isPublic,
         description: formValues.description,
         files: uploadedFiles,
       };
+
       if (selectedLab?.title) {
         Alert.alert('Feature Coming Soon');
       } else {
@@ -48,10 +59,17 @@ export const LabsScreen = () => {
     },
     [isPublic, fetchAddLab, selectedLab?.title, uploadedFiles],
   );
-  const handleLabDelete = () => fetchDeleteLab(selectedLab?.id);
+
+  const handleLabDelete = useCallback(() => {
+    if (selectedLab?.id) {
+      fetchDeleteLab(selectedLab.id);
+    }
+  }, [fetchDeleteLab, selectedLab?.id]);
+
   return (
     <LabsScreenView
       initialValues={initialValues}
+      allowToDelete={user?.id === selectedLab?.userID}
       isEditMode={!!selectedLab?.title}
       validationSchema={validationSchema}
       handleFormSubmit={handleFormSubmit}

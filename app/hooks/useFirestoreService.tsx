@@ -21,6 +21,9 @@ interface FirestoreServiceContextProps {
   uploadFirestoreCloudPhoto: () => Promise<
     FirebaseStorageTypes.TaskSnapshot | undefined
   >;
+
+  publicLabsList: ILabItem[];
+  fetchPublicLabs: () => Promise<void>;
 }
 
 const FirestoreServiceContext = createContext<
@@ -33,9 +36,11 @@ export const FirestoreServiceProvider: React.FC<{children: ReactNode}> = ({
   const {user, loginUser, logOut, setUser} = useAuth();
   const {
     labsList,
+    publicLabsList,
     fetchLabs,
     fetchAddLab,
     fetchDeleteLab,
+    fetchPublicLabs,
     uploadFirestoreCloudFile,
     uploadFirestoreCloudPhoto,
   } = useLabs(user?.id);
@@ -55,6 +60,8 @@ export const FirestoreServiceProvider: React.FC<{children: ReactNode}> = ({
     fetchLabs,
     fetchAddLab,
     fetchDeleteLab,
+    publicLabsList,
+    fetchPublicLabs,
     uploadFirestoreCloudFile,
     uploadFirestoreCloudPhoto,
   };

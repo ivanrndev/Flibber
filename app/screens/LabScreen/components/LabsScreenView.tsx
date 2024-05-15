@@ -28,6 +28,7 @@ interface ILabsScreenViewProps {
   isPublic: boolean;
   setIsPublic: React.Dispatch<React.SetStateAction<boolean>>;
   handleLabDelete: () => void;
+  allowToDelete: boolean;
 }
 
 import {StyleSheet} from 'react-native';
@@ -43,6 +44,7 @@ export const LabsScreenView = ({
   isPublic,
   setIsPublic,
   handleLabDelete,
+  allowToDelete,
 }: ILabsScreenViewProps) => (
   <>
     <Text style={styles.paddingText}>{title}</Text>
@@ -98,7 +100,7 @@ export const LabsScreenView = ({
               filesArray={uploadedFiles}
               setFilesArray={setUploadedFiles}
             />
-            {isEditMode && (
+            {isEditMode && allowToDelete && (
               <TouchableOpacity
                 onPress={handleLabDelete}
                 style={styles.purpleButton}>

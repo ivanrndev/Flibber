@@ -12,7 +12,7 @@ export enum ROOT_ROUTES {
 export enum BOTTOM_BAR_ROUTES {
   LABS_LIST = 'LABS_LIST',
   SETTINGS = 'SETTINGS',
-  Network_Example = 'Network_Example',
+  PUBLIC_LABS_LIST = 'PUBLIC_LABS_LIST',
 }
 
 export const useTypedNavigation = () =>

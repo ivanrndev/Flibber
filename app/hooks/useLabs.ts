@@ -21,6 +21,7 @@ import {navigateWithRef} from '../routes/RootNavigation';
  */
 interface IUseLabsResponse {
   labsList: ILabItem[];
+  publicLabsList: ILabItem[];
   fetchLabs: () => Promise<void>;
   fetchAddLab: (newLabData: ILabItemAddLocalData) => Promise<void>;
   fetchDeleteLab: (labDocId: string) => Promise<void>;
@@ -30,6 +31,7 @@ interface IUseLabsResponse {
   uploadFirestoreCloudPhoto: () => Promise<
     FirebaseStorageTypes.TaskSnapshot | undefined
   >;
+  fetchPublicLabs: () => Promise<void>;
 }
 
 /**
@@ -41,7 +43,7 @@ interface IUseLabsResponse {
 export const useLabs = (userId: string | undefined): IUseLabsResponse => {
   const [labsList, setLabs] = useState<ILabItem[]>([]);
   const labsCollection = firestore().collection('labs');
-  const [, setPublicLabs] = useState<ILabItem[]>([]);
+  const [publicLabsList, setPublicLabs] = useState<ILabItem[]>([]);
 
   /**
    * Executes a callback function if a user exists.
@@ -72,6 +74,7 @@ export const useLabs = (userId: string | undefined): IUseLabsResponse => {
     try {
       const publicLabsSnapshot = await labsCollection
         .where('isPublic', '==', true)
+        .where('userID', '!=', userId)
         .get();
       const fetchedPublicLabs: ILabItem[] = publicLabsSnapshot.docs.map(
         doc => ({
@@ -79,11 +82,13 @@ export const useLabs = (userId: string | undefined): IUseLabsResponse => {
           id: doc.id,
         }),
       );
+
+      console.log('here123', fetchedPublicLabs)
       setPublicLabs(fetchedPublicLabs);
     } catch (error) {
       console.error('Error fetching public labs:', error);
     }
-  }, []);
+  }, [userId]);
 
   const fetchLabs = useCallbackIfUserExists(async () => {
     const labsSnapshot = await labsCollection
@@ -184,6 +189,8 @@ export const useLabs = (userId: string | undefined): IUseLabsResponse => {
     fetchLabs,
     fetchAddLab,
     fetchDeleteLab,
+    fetchPublicLabs,
+    publicLabsList,
     uploadFirestoreCloudFile,
     uploadFirestoreCloudPhoto,
   };

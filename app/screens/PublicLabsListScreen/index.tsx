@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   StyleSheet,
   FlatList,
@@ -7,21 +7,24 @@ import {
   Text,
   RefreshControl,
 } from 'react-native';
+import {useFirestoreServiceContext} from '../../hooks/useFirestoreService';
+import {ROOT_ROUTES, useTypedNavigation} from '../../routes/constants';
+import {ILabItem} from '../../hooks/types';
+import ListItem from '../../components/ListItem';
+import Layout from '../../components/Layout';
+import Card from '../../components/Card';
+import {useTheme} from '../../theme/useTheme';
 
-import {useTheme} from '../theme/useTheme';
-import Layout from '../components/Layout';
-import Card from '../components/Card';
-import ListItem from '../components/ListItem';
-import {ROOT_ROUTES, useTypedNavigation} from '../routes/constants';
-import {useFirestoreServiceContext} from '../hooks/useFirestoreService';
-import {ILabItem} from '../hooks/types';
-
-const LabsListScreen = () => {
+export const PublicLabsListScreen = () => {
   const {theme} = useTheme();
 
-  const {labsList, fetchLabs} = useFirestoreServiceContext();
+  const {publicLabsList, fetchPublicLabs} = useFirestoreServiceContext();
   // const loadingStatus = useSelector((state) => state.todos.status);
   const nav = useTypedNavigation();
+
+  useEffect(() => {
+    fetchPublicLabs();
+  }, []);
 
   const navToAddTask = () => nav.navigate(ROOT_ROUTES.ADD_LAB);
 
@@ -34,7 +37,7 @@ const LabsListScreen = () => {
 
   const keyExtractor = (item: ILabItem) => `task-${item.id}`;
 
-  const onRefresh = () => fetchLabs();
+  const onRefresh = () => fetchPublicLabs();
 
   const renderEmptyState = () => (
     <View>
@@ -46,7 +49,7 @@ const LabsListScreen = () => {
     <Layout>
       <FlatList
         ListEmptyComponent={renderEmptyState}
-        data={labsList}
+        data={publicLabsList}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         // refreshControl={refreshComponent}
@@ -66,8 +69,6 @@ const LabsListScreen = () => {
     </Layout>
   );
 };
-
-export default LabsListScreen;
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
