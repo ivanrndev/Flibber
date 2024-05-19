@@ -2,6 +2,7 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {Formik, FormikHelpers} from 'formik';
 import {Input} from '../../../components/Form';
 import CheckBox from '@react-native-community/checkbox';
+
 import FilesSection from './FilesSection';
 import React from 'react';
 import {FirebaseStorageTypes} from '@react-native-firebase/storage';
@@ -65,21 +66,22 @@ export const LabsScreenView = ({
             <View style={styles.paddingContainer}>
               <Input
                 editable={!isEditMode}
-                placeholder="title"
+                testID="Title"
+                placeholder="Title"
                 onChangeText={handleChange('title')}
                 onBlur={handleBlur('title')}
                 value={values.title}
-                style={styles.purpleBorder}
+                keyboardType="email-address"
                 error={errors.title && touched.title ? errors.title : ''}
               />
               <Input
-                multiline
                 editable={!isEditMode}
-                placeholder="description"
+                testID="Description"
+                placeholder="Description"
                 onChangeText={handleChange('description')}
                 onBlur={handleBlur('description')}
                 value={values.description}
-                style={styles.multilineInput}
+                secureTextEntry
                 error={
                   errors.description && touched.description
                     ? errors.description

@@ -43,12 +43,6 @@ const Settings = () => {
             </View>
           </View>
           <>
-            <MenuItem label="Clear Cache" onPress={() => console.log('here')} />
-            <MenuItem
-              label="Clear History"
-              onPress={() => console.log('here')}
-            />
-
             <MenuItem
               label="Dark Mode"
               onPress={() => console.log('here')}
@@ -62,11 +56,6 @@ const Settings = () => {
                 />
               }
             />
-            <MenuItem
-              label="Terms & Conditions"
-              onPress={() => console.log('here')}
-            />
-            <MenuItem label="About" onPress={() => console.log('here')} />
             <MenuItem label="Logout" onPress={handleLogout} />
           </>
         </Card>

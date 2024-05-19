@@ -12,7 +12,7 @@ const Input = ({style, error, ...rest}: InputPropsType) => {
         {...rest}
         style={[
           styles.input,
-          {color: theme.color, borderColor: theme.layoutBg},
+          {color: theme.color, borderColor: theme.color, borderWidth: 1},
           {...style},
         ]}
       />
