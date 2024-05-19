@@ -1,4 +1,4 @@
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Text, View} from 'react-native';
 import {Formik, FormikHelpers} from 'formik';
 import {Input} from '../../../components/Form';
 import CheckBox from '@react-native-community/checkbox';
@@ -33,6 +33,8 @@ interface ILabsScreenViewProps {
 }
 
 import {StyleSheet} from 'react-native';
+import {Button} from '../../../components/Button/Button';
+import {useTheme} from '../../../theme/useTheme';
 
 export const LabsScreenView = ({
   initialValues,
@@ -46,80 +48,75 @@ export const LabsScreenView = ({
   setIsPublic,
   handleLabDelete,
   allowToDelete,
-}: ILabsScreenViewProps) => (
-  <>
-    <Text style={styles.paddingText}>{title}</Text>
-    <View style={styles.flexContainer}>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleFormSubmit}>
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-          errors,
-          touched,
-        }) => (
-          <>
-            <View style={styles.paddingContainer}>
-              <Input
-                editable={!isEditMode}
-                testID="Title"
-                placeholder="Title"
-                onChangeText={handleChange('title')}
-                onBlur={handleBlur('title')}
-                value={values.title}
-                keyboardType="email-address"
-                error={errors.title && touched.title ? errors.title : ''}
-              />
-              <Input
-                editable={!isEditMode}
-                testID="Description"
-                placeholder="Description"
-                onChangeText={handleChange('description')}
-                onBlur={handleBlur('description')}
-                value={values.description}
-                secureTextEntry
-                error={
-                  errors.description && touched.description
-                    ? errors.description
-                    : ''
-                }
-              />
-              <View style={styles.flexDirectionRow}>
-                <Text>is public?: </Text>
-                <CheckBox
-                  disabled={isEditMode}
-                  value={isPublic}
-                  onValueChange={setIsPublic}
+}: ILabsScreenViewProps) => {
+  const {theme} = useTheme();
+  return (
+    <View style={{flex: 1, backgroundColor: theme.layoutBg}}>
+      <Text style={[styles.paddingText, {color: theme.primary}]}>{title}</Text>
+      <View style={styles.flexContainer}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleFormSubmit}>
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
+            <>
+              <View style={styles.paddingContainer}>
+                <Input
+                  editable={!isEditMode}
+                  testID="Title"
+                  placeholder="Title"
+                  onChangeText={handleChange('title')}
+                  onBlur={handleBlur('title')}
+                  value={values.title}
+                  keyboardType="email-address"
+                  error={errors.title && touched.title ? errors.title : ''}
                 />
+                <Input
+                  editable={!isEditMode}
+                  testID="Description"
+                  placeholder="Description"
+                  onChangeText={handleChange('description')}
+                  onBlur={handleBlur('description')}
+                  value={values.description}
+                  error={
+                    errors.description && touched.description
+                      ? errors.description
+                      : ''
+                  }
+                />
+                <View style={[styles.flexDirectionRow]}>
+                  <Text style={{color: theme.color}}>is public?: </Text>
+                  <CheckBox
+                    tintColors={{true: theme.primary, false: theme.primary}}
+                    disabled={isEditMode}
+                    value={isPublic}
+                    onValueChange={setIsPublic}
+                  />
+                </View>
               </View>
-            </View>
-            <FilesSection
-              isCreateMode={isEditMode}
-              filesArray={uploadedFiles}
-              setFilesArray={setUploadedFiles}
-            />
-            {isEditMode && allowToDelete && (
-              <TouchableOpacity
-                onPress={handleLabDelete}
-                style={styles.purpleButton}>
-                <Text style={styles.whiteCenterText}>Delete Lab</Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              onPress={handleSubmit}
-              style={styles.purpleButton}>
-              <Text style={styles.whiteCenterText}>{title}</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </Formik>
+              <FilesSection
+                isCreateMode={isEditMode}
+                filesArray={uploadedFiles}
+                setFilesArray={setUploadedFiles}
+              />
+              {isEditMode && allowToDelete && (
+                <Button onPress={handleLabDelete} text="Delete Lab" />
+              )}
+              <Button onPress={handleSubmit} text={title} />
+            </>
+          )}
+        </Formik>
+      </View>
     </View>
-  </>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   paddingText: {
@@ -148,12 +145,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingTop: 50,
-  },
-  purpleButton: {
-    backgroundColor: 'purple',
-    marginHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
   },
   whiteCenterText: {
     color: 'white',

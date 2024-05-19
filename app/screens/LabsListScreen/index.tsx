@@ -59,7 +59,7 @@ export const LabsListScreen = () => {
         style={[styles.inputCard, {borderTopColor: theme?.cardBorderColor}]}>
         <View style={styles.inputBtnRow}>
           <TouchableOpacity onPress={navToAddTask} style={styles.inputBtnWrp}>
-            <Text>ADD LAB</Text>
+            <Text style={{color: theme?.color}}>ADD LAB</Text>
           </TouchableOpacity>
         </View>
       </Card>

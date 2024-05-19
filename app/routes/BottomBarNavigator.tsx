@@ -11,13 +11,13 @@ import {LabsListScreen} from '../screens/LabsListScreen';
 
 // Icons for Bottom Tab Navigation
 const homeIcon = ({color}: {color: ColorValue | number}) => (
-  <Icon name="list-sharp" size={30} color={color} />
+  <Icon name="albums-outline" size={30} color={color} />
 );
 const networkIcon = ({color}: {color: ColorValue | number}) => (
-  <Icon name="wifi-sharp" size={24} color={color} />
+  <Icon name="cloudy-outline" size={24} color={color} />
 );
 const settingsIcon = ({color}: {color: ColorValue | number}) => (
-  <Icon name="settings-sharp" size={24} color={color} />
+  <Icon name="person-outline" size={24} color={color} />
 );
 
 export const BottomTabBar = () => {

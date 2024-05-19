@@ -20,7 +20,7 @@ const avatar = require('../assets/images/avatar.png');
 
 const Settings = () => {
   const {theme, toggleTheme} = useTheme();
-  const {logOut, uploadFirestoreCloudFile} = useFirestoreServiceContext();
+  const {logOut, uploadFirestoreCloudPhoto} = useFirestoreServiceContext();
   const nav = useTypedNavigation();
 
   const handleLogout = () => {
@@ -34,7 +34,7 @@ const Settings = () => {
         style={[styles.contentContainer, {backgroundColor: theme.layoutBg}]}>
         <Card style={{backgroundColor: theme.cardBg}}>
           <View style={styles.avatarRow}>
-            <TouchableOpacity onPress={uploadFirestoreCloudFile}>
+            <TouchableOpacity onPress={uploadFirestoreCloudPhoto}>
               <Image source={avatar} style={styles.avatar} />
             </TouchableOpacity>
             <View>

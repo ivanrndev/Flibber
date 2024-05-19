@@ -16,6 +16,7 @@ import {
 import {useFirestoreServiceContext} from '../../../hooks/useFirestoreService';
 import storage, {FirebaseStorageTypes} from '@react-native-firebase/storage';
 import Pdf from 'react-native-pdf';
+import {useTheme} from '../../../theme/useTheme';
 
 interface IFilesSectionProps {
   filesArray: FirebaseStorageTypes.TaskSnapshot[];
@@ -72,15 +73,15 @@ function FilesSection({
   console.log('files arrrraaay', filesArray);
 
   const _renderList = useCallback(
-    () =>
+    theme =>
       filesArray.length === 0 ? (
-        <Text>No files for now</Text>
+        <Text style={{color: theme.color}}>No files for now</Text>
       ) : (
         <>
           {filesArray.map((i, index) => (
             <Text
               onPress={() => openModal(index)}
-              style={{fontSize: 20, padding: 5, width: 200}}
+              style={{fontSize: 20, padding: 5, width: 200, color: theme.color}}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {i.metadata.name}
@@ -88,30 +89,34 @@ function FilesSection({
           ))}
         </>
       ),
-    [filesArray],
+    [filesArray, openModal],
   );
+
+  const {theme} = useTheme();
   return !keyboardStatus ? (
-    <View style={{flexGrow: 0, flexDirection: 'row'}}>
-      {!isCreateMode ? <Text onPress={uploadFile}>Press to upload</Text> : null}
-      <View style={{borderWidth: 1, marginLeft: 20}}>{_renderList()}</View>
+    <View style={{flexGrow: 0, flexDirection: 'row', paddingBottom: 10}}>
+      {!isCreateMode ? (
+        <Text style={{color: theme.color}} onPress={uploadFile}>
+          Press to upload
+        </Text>
+      ) : null}
+      <View
+        style={{
+          borderWidth: 1,
+          marginLeft: 20,
+          borderColor: theme.color,
+          borderRadius: 10,
+          padding: 5,
+        }}>
+        {_renderList(theme)}
+      </View>
       <Modal
         animationType="slide"
         transparent={true}
         visible={!!modalVisible}
         onRequestClose={() => {
-          // Alert.alert('Modal has been closed.');
           setModalVisible(null);
         }}>
-        {/*<View style={styles.centeredView}>*/}
-        {/*  <View style={styles.modalView}>*/}
-        {/*    <Text style={styles.modalText}>Hello World!</Text>*/}
-        {/*    <Pressable*/}
-        {/*      style={[styles.button, styles.buttonClose]}*/}
-        {/*      onPress={() => setModalVisible(!modalVisible)}>*/}
-        {/*      <Text style={styles.textStyle}>Hide Modal</Text>*/}
-        {/*    </Pressable>*/}
-        {/*  </View>*/}
-        {/*</View>*/}
         <View style={styles.container}>
           <Text
             style={{fontSize: 30, paddingBottom: 20}}
@@ -121,10 +126,10 @@ function FilesSection({
           <Pdf
             trustAllCerts={false}
             source={{uri: modalVisible!, cache: true}}
-            onLoadComplete={(numberOfPages, filePath) => {
+            onLoadComplete={numberOfPages => {
               console.log(`Number of pages: ${numberOfPages}`);
             }}
-            onPageChanged={(page, numberOfPages) => {
+            onPageChanged={page => {
               console.log(`Current page: ${page}`);
             }}
             onError={error => {
@@ -154,47 +159,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey',
     width: Dimensions.get('window').width / 1.2,
     height: Dimensions.get('window').height / 1.2,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
   },
 });
 

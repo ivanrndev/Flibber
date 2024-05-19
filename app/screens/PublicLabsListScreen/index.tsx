@@ -1,18 +1,10 @@
 import React, {useEffect} from 'react';
-import {
-  StyleSheet,
-  FlatList,
-  View,
-  TouchableOpacity,
-  Text,
-  RefreshControl,
-} from 'react-native';
+import {StyleSheet, FlatList, View, Text, RefreshControl} from 'react-native';
 import {useFirestoreServiceContext} from '../../hooks/useFirestoreService';
 import {ROOT_ROUTES, useTypedNavigation} from '../../routes/constants';
 import {ILabItem} from '../../hooks/types';
 import ListItem from '../../components/ListItem';
 import Layout from '../../components/Layout';
-import Card from '../../components/Card';
 import {useTheme} from '../../theme/useTheme';
 
 export const PublicLabsListScreen = () => {
@@ -24,9 +16,8 @@ export const PublicLabsListScreen = () => {
 
   useEffect(() => {
     fetchPublicLabs();
+    //eslint-ignore
   }, []);
-
-  const navToAddTask = () => nav.navigate(ROOT_ROUTES.ADD_LAB);
 
   const renderItem = ({item, index}: {item: ILabItem; index: number}) => {
     const onPress = () => {
@@ -41,7 +32,9 @@ export const PublicLabsListScreen = () => {
 
   const renderEmptyState = () => (
     <View>
-      <Text>You don`t have labs for now</Text>
+      <Text style={{color: theme?.color}}>
+        There are no public labs in your network
+      </Text>
     </View>
   );
 
@@ -58,14 +51,6 @@ export const PublicLabsListScreen = () => {
         }
         contentContainerStyle={styles.flatList}
       />
-      <Card
-        style={[styles.inputCard, {borderTopColor: theme?.cardBorderColor}]}>
-        <View style={styles.inputBtnRow}>
-          <TouchableOpacity onPress={navToAddTask} style={styles.inputBtnWrp}>
-            <Text>ADD LAB</Text>
-          </TouchableOpacity>
-        </View>
-      </Card>
     </Layout>
   );
 };

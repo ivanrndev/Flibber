@@ -10,9 +10,10 @@ const Input = ({style, error, ...rest}: InputPropsType) => {
     <View style={styles.inputWrp}>
       <TextInput
         {...rest}
+        placeholderTextColor={theme.color}
         style={[
           styles.input,
-          {color: theme.color, borderColor: theme.color, borderWidth: 1},
+          {color: theme.color, borderColor: theme.color},
           {...style},
         ]}
       />
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
   input: {
     height: 45,
     borderColor: '#000000',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderRadius: spacing.borderRadius,
   },
   error: {
