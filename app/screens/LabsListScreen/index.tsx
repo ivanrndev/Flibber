@@ -38,7 +38,7 @@ export const LabsListScreen = () => {
 
   const renderEmptyState = () => (
     <View>
-      <Text>You don`t have labs for now</Text>
+      <Text style={{color: theme?.color}}>You don`t have labs for now</Text>
     </View>
   );
 
