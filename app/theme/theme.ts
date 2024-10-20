@@ -24,6 +24,10 @@ export interface themeType {
   cardBorderColor: string;
   accent: string;
   error: string;
+  purple: string;
+  secondPurple: string;
+  textColor: string;
+  textPlaceholderColor: string;
 }
 
 interface themesType {
@@ -60,6 +64,10 @@ const themes: themesType = {
     cardBorderColor: '#EEECEC',
     accent: '#0071ff',
     error: '#B00020',
+    purple: '#D4BFF0',
+    secondPurple: '#7332CD',
+    textColor: '#222222',
+    textPlaceholderColor: '#999999',
   },
   dark: {
     name: 'dark',
@@ -70,6 +78,10 @@ const themes: themesType = {
     cardBorderColor: '#1A1A1A',
     accent: '#0071ff',
     error: '#B00020',
+    purple: '#D4BFF0',
+    secondPurple: '#7332CD',
+    textColor: '#222222',
+    textPlaceholderColor: '#695D5D',
   },
 };
 

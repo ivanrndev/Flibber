@@ -1,25 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  Button,
-  Image,
-  ScrollView,
-  Text,
-  Alert,
-} from 'react-native';
+import {StyleSheet, View, Button, ScrollView, Text, Alert} from 'react-native';
 
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 
 import Layout from '../../components/Layout';
 import Card from '../../components/Card';
+import SVGLogo from '../../assets/images/logo.svg';
 import {Input} from '../../components/Form';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFirestoreServiceContext} from '../../hooks/useFirestoreService';
 import {ROOT_ROUTES, useTypedNavigation} from '../../routes/constants';
-
-const AppIcon = require('../../assets/images//appicon.png');
 
 interface ValuesType {
   username: string;
@@ -89,7 +80,8 @@ const Login = () => {
                 }) => (
                   <>
                     <View style={styles.iconWrapper}>
-                      <Image source={AppIcon} style={styles.appIcon} />
+                      <SVGLogo />
+                      {/* <Image source={AppIcon} style={styles.appIcon} /> */}
                     </View>
                     <Input
                       testID="Login.Username"

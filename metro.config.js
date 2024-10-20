@@ -7,10 +7,29 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
  * @type {import('metro-config').MetroConfig}
  */
 
-const config = {
-  resolver: {
-    resolverMainFields: ['sbmodern', 'react-native', 'browser', 'main'],
-  },
-};
+module.exports = (async () => {
+  const defaultConfig = await getDefaultConfig(__dirname);
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+  const {
+    resolver: {sourceExts, assetExts},
+  } = defaultConfig;
+
+  const config = {
+    transformer: {
+      babelTransformerPath: require.resolve('react-native-svg-transformer'),
+      getTransformOptions: async () => ({
+        transform: {
+          experimentalImportSupport: false,
+          inlineRequires: true,
+        },
+      }),
+    },
+    resolver: {
+      assetExts: assetExts.filter(ext => ext !== 'svg'),
+      sourceExts: [...sourceExts, 'svg'],
+      resolverMainFields: ['sbmodern', 'react-native', 'browser', 'main'],
+    },
+  };
+
+  return mergeConfig(defaultConfig, config);
+})();
