@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import {IUser} from './types';
@@ -12,6 +12,18 @@ interface IUseAuthResponse {
 
 export const useAuth = (): IUseAuthResponse => {
   const [user, setUser] = useState<IUser | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      const subscriber = firestore()
+        .collection('users')
+        .doc(user?.id)
+        .onSnapshot(documentSnapshot => {
+          setUser({id: user.id, ...documentSnapshot.data()} as IUser);
+        });
+      return () => subscriber();
+    }
+  }, [user?.id]);
 
   const loginUser = async (
     username: string,

@@ -6,6 +6,7 @@ export interface IUser {
   id: string;
   username: string;
   password: string;
+  profileImageURL: string | null;
 }
 
 // LABS TYPES

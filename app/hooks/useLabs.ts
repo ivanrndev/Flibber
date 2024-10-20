@@ -83,7 +83,7 @@ export const useLabs = (userId: string | undefined): IUseLabsResponse => {
         }),
       );
 
-      console.log('here123', fetchedPublicLabs)
+      console.log('here123', fetchedPublicLabs);
       setPublicLabs(fetchedPublicLabs);
     } catch (error) {
       console.error('Error fetching public labs:', error);
@@ -171,15 +171,43 @@ export const useLabs = (userId: string | undefined): IUseLabsResponse => {
     try {
       const fileData = await openFilePicker(FILE_UPLOAD_TYPES.IMG);
       if (fileData) {
-        const newUUID = uuidv4();
-        const storagePath: CloudStorageImagePath = `${SectionTypes.Images}/${userId}/${newUUID}/${fileData.name}`;
+        console.log(`Attempting to upload file: ${fileData.name}`);
+
+        const storagePath: CloudStorageImagePath = `${SectionTypes.Images}/${userId}/profile_image`;
         const reference = storage().ref(storagePath);
+
+        console.log(`New storage path: ${storagePath}`);
+
+        // Delete the existing image if it exists
+        try {
+          await reference.delete();
+          console.log('Existing image deleted successfully');
+        } catch (deleteError) {
+          console.log(
+            'No existing image to delete or delete failed',
+            deleteError,
+          );
+        }
+
+        // Upload the new image
         const res = await reference.putFile(fileData.fileCopyUri as string);
-        console.warn('here res uploadFirestoreCloudPhoto', res);
+
+        console.log('Image uploaded successfully', res);
+
+        // Get the download URL of the uploaded image
+        const downloadURL = await reference.getDownloadURL();
+
+        // Update user document in Firestore
+        await firestore().collection('users').doc(userId).update({
+          profileImageURL: downloadURL,
+        });
+
+        console.log('User document updated with new profile image URL');
+
         return res;
       }
     } catch (error) {
-      console.error('Error uploading photo:', error);
+      console.error('Error uploading photo or updating user:', error);
       return undefined;
     }
   };

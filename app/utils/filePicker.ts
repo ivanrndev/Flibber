@@ -20,7 +20,7 @@ type fileName = string;
 export type CloudStorageFilePath =
   `${SectionTypes.Files}/${UserID}/${UUID}/${fileName}`;
 export type CloudStorageImagePath =
-  `${SectionTypes.Images}/${UserID}/${UUID}/${fileName}`;
+  `${SectionTypes.Images}/${string}/profile_image`;
 
 type FileUploadType =
   (typeof FILE_UPLOAD_TYPES)[keyof typeof FILE_UPLOAD_TYPES];

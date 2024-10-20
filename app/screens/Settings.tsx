@@ -20,7 +20,9 @@ const avatar = require('../assets/images/avatar.png');
 
 const Settings = () => {
   const {theme, toggleTheme} = useTheme();
-  const {logOut, uploadFirestoreCloudPhoto} = useFirestoreServiceContext();
+  const {logOut, uploadFirestoreCloudPhoto, user} =
+    useFirestoreServiceContext();
+  console.log('here user', user);
   const nav = useTypedNavigation();
 
   const handleLogout = () => {
@@ -35,12 +37,14 @@ const Settings = () => {
         <Card style={{backgroundColor: theme.cardBg}}>
           <View style={styles.avatarRow}>
             <TouchableOpacity onPress={uploadFirestoreCloudPhoto}>
-              <Image source={avatar} style={styles.avatar} />
+              <Image
+                source={
+                  user?.profileImageURL ? {uri: user.profileImageURL} : avatar
+                }
+                style={styles.avatar}
+              />
             </TouchableOpacity>
-            <View>
-              <Text style={{color: theme.color}}>Hermione Granger</Text>
-              <Text style={{color: theme.color}}>u/hermione</Text>
-            </View>
+            <Text style={{color: theme.color}}>{user?.username}</Text>
           </View>
           <>
             <MenuItem
@@ -85,6 +89,7 @@ const styles = StyleSheet.create({
   },
   avatarRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
   },
   avatar: {
