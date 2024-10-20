@@ -4,7 +4,6 @@ import {
   ScrollView,
   View,
   Text,
-  Switch,
   Image,
   TouchableOpacity,
 } from 'react-native';
@@ -19,7 +18,7 @@ import {ROOT_ROUTES, useTypedNavigation} from '../routes/constants';
 const avatar = require('../assets/images/avatar.png');
 
 const Settings = () => {
-  const {theme, toggleTheme} = useTheme();
+  const {theme} = useTheme();
   const {logOut, uploadFirestoreCloudPhoto, user} =
     useFirestoreServiceContext();
   console.log('here user', user);
@@ -47,7 +46,7 @@ const Settings = () => {
             <Text style={{color: theme.color}}>{user?.username}</Text>
           </View>
           <>
-            <MenuItem
+            {/* <MenuItem
               label="Dark Mode"
               onPress={() => console.log('here')}
               rightItem={
@@ -59,7 +58,7 @@ const Settings = () => {
                   ios_backgroundColor="#3e3e3e"
                 />
               }
-            />
+            /> */}
             <MenuItem label="Logout" onPress={handleLogout} />
           </>
         </Card>

@@ -32,11 +32,11 @@ export const BottomTabBar = () => {
           borderTopColor: theme?.layoutBg,
         },
         tabBarInactiveTintColor: theme.color,
-        tabBarActiveTintColor: theme.primary,
+        tabBarActiveTintColor: theme.secondPurple,
         headerStyle: {backgroundColor: theme.cardBg, height: 50},
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          color: theme.primary,
+          color: theme.secondPurple,
           fontSize: 18,
           fontWeight: 'bold',
         },
@@ -46,6 +46,7 @@ export const BottomTabBar = () => {
         name={BOTTOM_BAR_ROUTES.LABS_LIST}
         component={LabsListScreen}
         options={{
+          title: 'Your labs',
           tabBarIcon: homeIcon,
         }}
       />
@@ -53,6 +54,7 @@ export const BottomTabBar = () => {
         name={BOTTOM_BAR_ROUTES.PUBLIC_LABS_LIST}
         component={PublicLabsListScreen}
         options={{
+          title: 'Public labs',
           tabBarIcon: networkIcon,
         }}
       />
@@ -60,6 +62,7 @@ export const BottomTabBar = () => {
         name={BOTTOM_BAR_ROUTES.SETTINGS}
         component={Settings}
         options={{
+          title: 'Settings',
           // headerShown: false,
           tabBarIcon: settingsIcon,
         }}
